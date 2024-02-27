@@ -1,0 +1,6 @@
+height_cm,width_cm,x,y,color,name
+26,20,0,0,blue,Rectangle1
+15,30,10,20,red,Rectangle2
+22,18,20,30,green,Rectangle3
+10,40,15,45,yellow,Rectangle4
+18,24,30,50,purple,Rectangle5

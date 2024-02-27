@@ -1,0 +1,39 @@
+#!/usr/bin/expect -f
+
+# Determine the script's directory
+set scriptDir [file dirname $argv0]
+
+# Token file path, local to the script directory
+set tokenFile "$scriptDir/token_file.txt"
+
+# Login endpoint and credentials
+set loginUrl "https://sandboxapicdc.cisco.com/api/aaaLogin.json"
+set username "admin"
+set password "!v3G@!4@Y"
+
+# JSON payload for login; adjust according to the API's expected format
+set loginPayload "{\"aaaUser\":{\"attributes\":{\"name\":\"$username\",\"pwd\":\"$password\"}}}"
+
+# Perform login request using curl
+set timeout -1
+spawn curl -s -k -X POST -H "Content-Type: application/json" -d $loginPayload $loginUrl
+
+# Wait for the command to complete
+expect eof
+
+# Capture the output of the command
+set response $expect_out(buffer)
+
+# Use jq to parse the JSON response and extract the token. Adjust the jq filter as necessary.
+# Note: The actual JSON path to the token may vary based on the API's response structure.
+set token [exec echo $response | jq -r '.imdata[0].aaaLogin.attributes.token']
+
+# Check if we got a token
+if {[string length $token] > 0} {
+    puts "Token obtained: $token"
+    # Store the token in the token file local to the script directory
+    exec echo $token > $tokenFile
+    puts "Token stored at: $tokenFile"
+} else {
+    puts "Failed to obtain token: $response"
+}
